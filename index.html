@@ -188,6 +188,21 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
 .offer-btns{display:flex;gap:8px;margin-top:10px}
 .confirm-card{text-align:center}
 .confirm-card .big{font-size:54px}
+/* ===== CONFIG FLOW ===== */
+.cfg-header img{width:100%;height:160px;object-fit:cover;border-radius:14px;margin-bottom:14px;display:block}
+.cfg-title{font-size:20px;font-weight:900;text-align:center;margin-bottom:4px}
+.cfg-sub{color:var(--muted);text-align:center;font-size:13px;margin-bottom:18px}
+.cfg-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.cfg-opt-btn{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;background:var(--card);border:2px solid var(--line);border-radius:14px;cursor:pointer;font-family:var(--font);font-size:15px;font-weight:700;color:var(--txt);transition:.15s;text-align:left}
+.cfg-opt-btn:hover{border-color:var(--accent);background:rgba(255,90,31,.08)}
+.cfg-price{color:var(--accent-2);font-weight:900;white-space:nowrap;margin-left:10px}
+.cfg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;max-height:280px;overflow-y:auto}
+.cfg-item-btn{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 8px;cursor:pointer;font-family:var(--font);color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:6px;transition:.15s;text-align:center}
+.cfg-item-btn:hover{border-color:var(--accent)}
+.cfg-item-btn img{width:52px;height:52px;border-radius:10px;object-fit:cover}
+.cfg-item-btn .cfg-n{font-size:11px;font-weight:700;line-height:1.2}
+.cfg-item-btn .cfg-price{font-size:11px;color:var(--accent-2)}
+#cfgCard{max-height:88vh;overflow-y:auto}
 .promo-card{background:#fff;color:#1a1a1a;border-radius:24px;max-width:420px;width:100%;overflow:hidden;position:relative;transform:scale(.95);transition:.2s;box-shadow:0 30px 80px rgba(0,0,0,.55)}
 .modal.show .promo-card{transform:none}
 .promo-x{position:absolute;top:10px;right:14px;color:#fff;z-index:3;text-shadow:0 1px 4px rgba(0,0,0,.6)}
@@ -521,6 +536,11 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
   </div>
 </div>
 
+<!-- Config flow modal -->
+<div class="modal" id="cfgModal" role="dialog" aria-modal="true">
+  <div class="modal-card" id="cfgCard"></div>
+</div>
+
 <!-- Admin login -->
 <div class="modal" id="admLoginModal" role="dialog" aria-modal="true" aria-label="Administration">
   <div class="modal-card">
@@ -557,23 +577,16 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
 const WK="https://commons.wikimedia.org/wiki/Special:FilePath/";
 const MENU=[
  {cat:"Kebab",icon:"🥙",type:"sale",items:[
-  {n:"Kebab seul",p:7.00,d:"Pain galette, viande de kebab grillée, crudités et sauce au choix.",img:"1638537125835-82acb38d3531"},
-  {n:"Chicken seul",p:7.00,d:"Émincé de poulet mariné, salade, tomates et sauce maison.",img:"1528279027-68f0d7fce9f1"},
-  {n:"Américain seul",p:7.00,d:"Steak haché, frites à l'intérieur, fromage et sauce.",img:"1550547660-d9450f859349"},
-  {n:"Durum seul",p:8.00,d:"Galette roulée façon dürüm, viande, crudités et sauce.",img:"1584959370147-fcdd784b2e45"},
-  {n:"Menu Kebab simple",p:9.90,pop:1,d:"Le kebab classique + frites maison + boisson 33cl.",img:"1638537125835-82acb38d3531"},
-  {n:"Menu Chicken",p:9.90,d:"Sandwich poulet mariné, frites et boisson au choix.",img:"1528279027-68f0d7fce9f1"},
-  {n:"Menu American",p:9.90,d:"L'américain steak-frites, accompagné de frites et boisson.",img:"1550547660-d9450f859349"},
-  {n:"Menu Durum Kebab",p:10.00,d:"Dürüm généreux, frites maison et boisson 33cl.",img:"1584959370147-fcdd784b2e45"},
-  {n:"Menu Kebab signature au choix",p:11.00,d:"Composez votre kebab signature, avec frites et boisson.",img:"1638537125835-82acb38d3531"},
-  {n:"Menu Kebab Mega",p:15.00,pop:1,d:"Double portion de viande pour les grandes faims, frites + boisson.",img:"1638537125835-82acb38d3531"}]},
+  {n:"Kebab",p:7.00,d:"Pain galette, viande de kebab grillée, crudités et sauce au choix.",img:"1638537125835-82acb38d3531",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]},
+  {n:"Chicken",p:7.00,d:"Émincé de poulet mariné, salade, tomates et sauce maison.",img:"1528279027-68f0d7fce9f1",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]},
+  {n:"Américain",p:7.00,d:"Steak haché, frites à l'intérieur, fromage et sauce.",img:"1550547660-d9450f859349",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]},
+  {n:"Durum",p:8.00,d:"Galette roulée façon dürüm, viande, crudités et sauce.",img:"1584959370147-fcdd784b2e45",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.00}]},
+  {n:"Kebab Signature",p:8.00,pop:1,d:"Composez votre kebab signature avec les ingrédients de votre choix.",img:"1638537125835-82acb38d3531",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:3.00}]},
+  {n:"Kebab Mega",p:12.00,pop:1,d:"Double portion de viande pour les grandes faims.",img:"1638537125835-82acb38d3531",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:3.00}]}]},
  {cat:"Tacos",icon:"🌮",type:"sale",items:[
-  {n:"Tacos M seul",p:8.50,d:"1 viande au choix, frites, fromage et sauce fromagère.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg"},
-  {n:"Menu Tacos M",p:8.50,pop:1,d:"Tacos M, 1 viande, + frites et boisson 33cl.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg"},
-  {n:"Tacos L seul",p:9.50,d:"2 viandes au choix, frites et sauce fromagère gratinée.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg"},
-  {n:"Menu Tacos L",p:9.50,d:"Tacos L, 2 viandes, accompagné de frites et boisson.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg"},
-  {n:"Tacos XL seul",p:11.00,d:"3 viandes pour les gros appétits, frites et sauce maison.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg"},
-  {n:"Menu Tacos XL",p:11.00,d:"Tacos XL 3 viandes, frites maison et boisson 33cl.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg"}]},
+  {n:"Tacos M",p:8.50,pop:1,d:"1 viande au choix, frites, fromage et sauce fromagère.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",opts:[{l:"Seul",extra:0},{l:"Avec boisson 33cl",extra:1.40}]},
+  {n:"Tacos L",p:9.50,d:"2 viandes au choix, frites et sauce fromagère gratinée.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",opts:[{l:"Seul",extra:0},{l:"Avec boisson 33cl",extra:1.40}]},
+  {n:"Tacos XL",p:11.00,d:"3 viandes pour les gros appétits, frites et sauce maison.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",opts:[{l:"Seul",extra:0},{l:"Avec boisson 33cl",extra:1.40}]}]},
  {cat:"Burgers",icon:"🍔",type:"sale",items:[
   {n:"Burger Fish",p:8.00,d:"Filet de poisson pané, cheddar, salade et sauce tartare.",img:"1551782450-a2132b4ba21d"},
   {n:"Burger Chicken",p:8.00,d:"Galette de poulet croustillante, cheddar et sauce burger.",img:"1606755962773-d324e0a13086"},
@@ -607,9 +620,10 @@ const MENU=[
   {n:"Menu Tenders",p:9.50,pop:1,d:"Box de tenders + frites maison + boisson 33cl.",img:"1605291581926-df4bf7ee3e89"},
   {n:"Wings",p:9.50,d:"6 ailes de poulet marinées, frites et sauce au choix.",img:WK+"Chicken%20wings%20as%20a%20night%20snack.jpg"},
   {n:"Offre Duo",p:17.00,d:"À partager : tenders, wings, frites et 2 boissons.",img:"1586793783658-261cddf883ef"},
-  {n:"Offre Quattro",p:30.00,d:"Le grand plateau poulet à partager entre 4.",img:"1605291581926-df4bf7ee3e89"},
+  {n:"Offre Quattro",p:30.00,d:"Le grand plateau poulet à partager entre 4.",img:"1605291581926-df4bf7ee3e89"}]},
+ {cat:"Box Signature",icon:"⭐",type:"sale",items:[
   {n:"Tasty Crousty",p:9.90,pop:1,d:"Tenders croustillants, riz, sauce sucrée et oignons croustillants.",img:"1586793783658-261cddf883ef"},
-  {n:"Tasty Crousty poisson pané",p:9.90,d:"Poisson pané croustillant, riz, sauce sucrée et oignons croustillants.",img:"1551782450-a2132b4ba21d"}]},
+  {n:"Tasty Crousty poisson",p:9.90,d:"Poisson pané croustillant, riz, sauce sucrée et oignons croustillants.",img:"1551782450-a2132b4ba21d"}]},
  {cat:"Assiettes",icon:"🍴",type:"sale",items:[
   {n:"Assiette",p:11.50,d:"Viande au choix, frites, salade et sauce — sans pain.",img:WK+"D%C3%B6ner-Teller%20in%20Riesa%201.JPG"},
   {n:"Menu assiette",p:13.50,d:"L'assiette complète avec boisson 33cl.",img:WK+"D%C3%B6ner-Teller%20in%20Riesa%201.JPG"},
@@ -668,7 +682,16 @@ const slug=s=>s.normalize('NFD').replace(/[^\w]+/g,'-').toLowerCase();
 
 function renderEnvie(){
   const grid=$('envieGrid');
-  MENU.forEach(g=>{
+  // Special combined card
+  grid.insertAdjacentHTML('beforeend',`
+    <a href="#cat-kebab" class="envie-card">
+      <img src="${imgUrl('1638537125835-82acb38d3531',400,560)}" alt="Kebab Tacos Croc Meal Reims" loading="lazy">
+      <div class="envie-overlay">
+        <span class="envie-icon">🥙🌮</span>
+        <span class="envie-name">Kebab & Tacos</span>
+      </div>
+    </a>`);
+  MENU.filter(g=>g.cat!=='Kebab'&&g.cat!=='Tacos').forEach(g=>{
     const id=slug(g.cat);
     const img=g.items[0].img;
     grid.insertAdjacentHTML('beforeend',`
@@ -706,12 +729,17 @@ function renderMenu(){
       const unBadge=unavail?`<span class="badge-unavail">Indisponible</span>`:'';
       const img=ov.img||it.img;
       const data=JSON.stringify({n:it.n,p:price,type:g.type,img});
+      const hasOpts=it.opts&&it.opts.length>0;
+      const dispPrice=hasOpts?`À partir de ${eur(price)}`:eur(price);
+      const cfgKey='cfg_'+slug(it.n);
+      if(hasOpts)window[cfgKey]={...it,type:g.type,p:price,img};
+      const btnClick=hasOpts?`openCfg('${cfgKey}')`:(`addItem(${data})`);
       h+=`<div class="item${unavail?' unavail':''}">${pop}${unBadge}
         <div class="photo"><img loading="lazy" alt="${it.n} — Croc Meal Reims" src="${imgUrl(img,500,350)}" onerror="imgErr(this)"></div>
         <div class="body"><h4>${it.n}</h4>
         <div class="desc">${it.d||''}</div>
-        <div class="row"><span class="price">${eur(price)}</span>
-        <button class="add" onclick='addItem(${data})'>+</button></div></div></div>`;
+        <div class="row"><span class="price">${dispPrice}</span>
+        <button class="add" onclick='${btnClick}'>+</button></div></div></div>`;
     });
     h+=`</div>`;
     root.insertAdjacentHTML('beforeend',h);
@@ -771,6 +799,103 @@ function removeOffer(key){
   if(!$('upsellCard').querySelector('.offer'))closeUpsell();
 }
 function closeUpsell(){$('upsellModal').classList.remove('show');updateCart();openCart();}
+
+// ==================== CONFIG FLOW ====================
+let cfgState=null;
+function openCfg(key){
+  cfgState={item:window[key],opt:null,drink:null,side:null,dessert:null};
+  cfgShowOpts();
+  $('cfgModal').classList.add('show');$('overlay').classList.add('show');
+}
+function closeCfg(){$('cfgModal').classList.remove('show');if(!document.querySelector('.modal.show:not(#cfgModal)'))$('overlay').classList.remove('show');}
+function cfgShowOpts(){
+  const it=cfgState.item;
+  let h=`<img src="${imgUrl(it.img,480,160)}" onerror="imgErr(this)">
+  <div class="cfg-title">${it.n}</div>
+  <div class="cfg-sub">${it.d||''}</div>
+  <div class="cfg-opts">`;
+  it.opts.forEach((o,i)=>{
+    const total=it.p+(o.extra||0);
+    h+=`<button class="cfg-opt-btn" onclick="cfgPickOpt(${i})">
+      <span>${o.l}</span>
+      <span class="cfg-price">${o.extra>0?'+'+eur(o.extra):eur(total)}</span>
+    </button>`;
+  });
+  h+=`</div><button class="btn btn-ghost btn-block" onclick="closeCfg()">Annuler</button>`;
+  $('cfgCard').innerHTML=h;
+}
+function cfgPickOpt(i){
+  cfgState.opt=cfgState.item.opts[i];
+  const isMenu=cfgState.opt.extra>0;
+  if(isMenu){cfgShowDrink();}else{cfgFinish();}
+}
+function cfgShowDrink(){
+  const drinks=MENU.find(g=>g.cat==='Boissons fraîches').items.filter(d=>d.p<=2.00);
+  let h=`<div class="cfg-title">Choisissez votre boisson 🥤</div>
+  <div class="cfg-sub">Incluse dans votre menu</div>
+  <div class="cfg-grid">`;
+  drinks.forEach((d,i)=>{
+    h+=`<button class="cfg-item-btn" onclick="cfgPickDrink(${i})">
+      <img src="${imgUrl(d.img,52,52)}" onerror="imgErr(this)">
+      <span class="cfg-n">${d.n}</span>
+    </button>`;
+  });
+  h+=`</div>`;
+  $('cfgCard').innerHTML=h;
+  $('cfgCard')._drinks=drinks;
+}
+function cfgPickDrink(i){
+  cfgState.drink=$('cfgCard')._drinks[i];
+  cfgShowSide();
+}
+function cfgShowSide(){
+  const sides=MENU.find(g=>g.cat==='Box & Poulet').items;
+  let h=`<div class="cfg-title">Veux-tu un side ? 🍗</div>
+  <div class="cfg-sub">En supplément</div>
+  <div class="cfg-grid">`;
+  sides.forEach((s,i)=>{
+    h+=`<button class="cfg-item-btn" onclick="cfgPickSide(${i})">
+      <img src="${imgUrl(s.img,52,52)}" onerror="imgErr(this)">
+      <span class="cfg-n">${s.n}</span>
+      <span class="cfg-price">+${eur(s.p)}</span>
+    </button>`;
+  });
+  h+=`</div><button class="btn btn-ghost btn-block" onclick="cfgSkipSide()">Non merci →</button>`;
+  $('cfgCard').innerHTML=h;
+  $('cfgCard')._sides=sides;
+}
+function cfgPickSide(i){cfgState.side=$('cfgCard')._sides[i];cfgShowDessert();}
+function cfgSkipSide(){cfgState.side=null;cfgShowDessert();}
+function cfgShowDessert(){
+  const desserts=MENU.find(g=>g.cat==='Desserts').items;
+  let h=`<div class="cfg-title">Veux-tu un dessert ? 🥤</div>
+  <div class="cfg-sub">En supplément</div>
+  <div class="cfg-grid">`;
+  desserts.forEach((d,i)=>{
+    h+=`<button class="cfg-item-btn" onclick="cfgPickDessert(${i})">
+      <img src="${imgUrl(d.img,52,52)}" onerror="imgErr(this)">
+      <span class="cfg-n">${d.n}</span>
+      <span class="cfg-price">+${eur(d.p)}</span>
+    </button>`;
+  });
+  h+=`</div><button class="btn btn-ghost btn-block" onclick="cfgSkipDessert()">Non merci, finaliser →</button>`;
+  $('cfgCard').innerHTML=h;
+  $('cfgCard')._desserts=desserts;
+}
+function cfgPickDessert(i){cfgState.dessert=$('cfgCard')._desserts[i];cfgFinish();}
+function cfgSkipDessert(){cfgState.dessert=null;cfgFinish();}
+function cfgFinish(){
+  closeCfg();
+  const it=cfgState.item,opt=cfgState.opt;
+  const totalP=it.p+(opt?opt.extra:0);
+  const name=opt&&opt.extra>0?`${it.n} Menu`:it.n;
+  cart.push({n:name,p:totalP,type:it.type,img:it.img,qty:1,discount:0});
+  if(cfgState.drink){cart.push({n:`${cfgState.drink.n} (inclus)`,p:0,type:'boisson',img:cfgState.drink.img,qty:1,discount:0});}
+  if(cfgState.side){cart.push({...cfgState.side,qty:1,discount:0});}
+  if(cfgState.dessert){cart.push({...cfgState.dessert,qty:1,discount:0});}
+  updateCart();openCart();
+}
+// ==================== FIN CONFIG ====================
 
 function lineTotal(l){return l.p*(1-l.discount)*l.qty;}
 function subtotal(){return cart.reduce((s,l)=>s+lineTotal(l),0);}
