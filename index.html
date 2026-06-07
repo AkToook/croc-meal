@@ -172,6 +172,12 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
 .drawer-foot{padding:18px 20px;border-top:1px solid var(--line)}
 .totrow{display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;color:var(--muted)}
 .totrow.big{font-size:20px;font-weight:900;color:var(--txt);margin:10px 0 14px}
+.mode-sel{display:flex;gap:6px;margin-bottom:14px}
+.mode-btn{flex:1;padding:8px 4px;font-size:13px;font-weight:700;border:1.5px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;transition:.15s;font-family:var(--font)}
+.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(255,90,31,.10)}
+.min-warn{background:rgba(255,90,31,.12);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--accent);margin-bottom:10px;text-align:center;font-weight:600}
+.min-warn small{font-weight:400;color:var(--muted);font-size:12px}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
 .save-note{color:var(--green);font-weight:700;font-size:13px}
 .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:70;opacity:0;pointer-events:none;transition:.2s}
 .modal.show{opacity:1;pointer-events:auto}
@@ -889,9 +895,13 @@ function cfgFinish(){
 }
 // ==================== FIN CONFIG ====================
 
+let orderMode='emporter'; // 'place' | 'emporter' | 'livraison'
+const MIN_LIVRAISON=15;
+
 function lineTotal(l){return l.p*(1-l.discount)*l.qty;}
 function subtotal(){return cart.reduce((s,l)=>s+lineTotal(l),0);}
 function savings(){return cart.reduce((s,l)=>s+l.p*l.discount*l.qty,0);}
+function setOrderMode(m){orderMode=m;updateCart();}
 
 function updateCart(){
   $('cartCount').textContent=cartCount();
@@ -912,12 +922,19 @@ function updateCart(){
   const base=subtotal();
   const promo=firstOrder?base*(AS.promoPct/100):0;
   const grand=base-promo;
+  const isLivraison=orderMode==='livraison';
+  const belowMin=isLivraison&&grand<MIN_LIVRAISON;
+  const remaining=MIN_LIVRAISON-grand;
+  const modeLabels={place:'Sur place',emporter:'À emporter',livraison:'Livraison'};
+  const modeBtns=Object.entries(modeLabels).map(([k,l])=>`<button class="mode-btn${orderMode===k?' active':''}" onclick="setOrderMode('${k}')">${l}</button>`).join('');
   foot.innerHTML=`
+    <div class="mode-sel">${modeBtns}</div>
     <div class="totrow"><span>Sous-total</span><span>${eur(cart.reduce((s,l)=>s+l.p*l.qty,0))}</span></div>
     ${sav>0?`<div class="totrow"><span class="save-note">Réduction récompense</span><span class="save-note">−${eur(sav)}</span></div>`:''}
     ${firstOrder?`<div class="totrow"><span class="save-note">−${Math.round(AS.promoPct)}% première commande</span><span class="save-note">−${eur(promo)}</span></div>`:''}
     <div class="totrow big"><span>Total</span><span>${eur(grand)}</span></div>
-    <button class="btn btn-primary btn-block" onclick="checkout()">Valider ma commande · ${eur(grand)}</button>
+    ${belowMin?`<div class="min-warn">🚚 Minimum de commande : ${eur(MIN_LIVRAISON)} pour la livraison<br><small>Encore ${eur(remaining)} à ajouter</small></div>`:''}
+    <button class="btn btn-primary btn-block" ${belowMin?'disabled':''} onclick="checkout()">Valider ma commande · ${eur(grand)}</button>
     <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:8px">Paiement sur place ou à la livraison</p>`;
   emojify(foot);
 }
@@ -950,7 +967,9 @@ function closePromo(){sessionStorage.setItem('promo_seen','1');$('promoModal').c
 function claimPromo(){firstOrder=true;sessionStorage.setItem('promo_seen','1');closePromo();updateCart();var c=document.getElementById('carte');if(c)c.scrollIntoView({behavior:'smooth'});}
 function checkout(){
   if(cart.length===0)return;
-  let msg='🛒 *Nouvelle commande — Croc Meal*\n\n';
+  if(orderMode==='livraison'&&subtotal()<MIN_LIVRAISON)return;
+  const modeLabel={place:'Sur place',emporter:'À emporter',livraison:'Livraison'}[orderMode];
+  let msg=`🛒 *Nouvelle commande — Croc Meal*\n📦 *${modeLabel}*\n\n`;
   cart.forEach(l=>{msg+=`• ${l.n} ×${l.qty} — ${eur(lineTotal(l))}\n`;});
   const tot=subtotal();
   const promo=firstOrder?tot*0.05:0;
