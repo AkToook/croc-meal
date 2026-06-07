@@ -724,7 +724,7 @@ function renderMenu(){
       const dispPrice=hasOpts?`À partir de ${eur(price)}`:eur(price);
       const cfgKey='cfg_'+slug(it.n);
       if(hasOpts)window[cfgKey]={...it,type:g.type,p:price,img};
-      const btnClick=hasOpts?`openCfg('${cfgKey}')`:(`addItem(${data})`);
+      const btnClick=hasOpts?`openCfg("${cfgKey}")`:(`addItem(${data})`);
       h+=`<div class="item${unavail?' unavail':''}">${pop}${unBadge}
         <div class="photo"><img loading="lazy" alt="${it.n} — Croc Meal Reims" src="${imgUrl(img,500,350)}" onerror="imgErr(this)"></div>
         <div class="body"><h4>${it.n}</h4>
