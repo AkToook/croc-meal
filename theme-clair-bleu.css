@@ -1,0 +1,66 @@
+/* ================================================
+   THÈME CLAIR BLEU — override du dark theme WEBcraft
+   ================================================ */
+
+:root {
+  --bg:    #f0f4fa;
+  --bg2:   #e2eaf5;
+  --bg3:   #d4dff0;
+  --white: #1a2540;
+  --muted: #4a5a7a;
+  --accent: #1a6fcf;
+  --accent2: #0e4fa0;
+}
+
+/* Nav */
+nav, .nav-wrapper {
+  background: rgba(240, 244, 250, 0.92) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(26, 111, 207, 0.15);
+}
+
+nav .logo, nav a, nav .nav-link {
+  color: #1a2540 !important;
+}
+
+/* Hero */
+.hero, #hero {
+  background: linear-gradient(135deg, #e8f0fe 0%, #d4e4ff 50%, #c8d8f8 100%) !important;
+}
+
+.hero-orb, .orb {
+  background: radial-gradient(circle, rgba(26, 111, 207, 0.15), transparent 70%) !important;
+}
+
+/* Cards */
+.card, .service-card, .portfolio-card, .temoignage-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(26, 111, 207, 0.12);
+  box-shadow: 0 4px 24px rgba(26, 111, 207, 0.08);
+}
+
+.card:hover, .service-card:hover {
+  box-shadow: 0 8px 40px rgba(26, 111, 207, 0.18) !important;
+}
+
+/* Sections alternées */
+section:nth-child(even), .section-alt {
+  background: #e8f0fe !important;
+}
+
+/* Footer */
+footer {
+  background: #1a2540 !important;
+  color: #f0f4fa !important;
+}
+
+/* Inputs */
+input, textarea, select {
+  background: #ffffff !important;
+  border: 1px solid rgba(26, 111, 207, 0.25) !important;
+  color: #1a2540 !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #4a5a7a !important;
+}
