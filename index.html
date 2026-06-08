@@ -629,16 +629,16 @@ const MENU=[
   {n:"Kebab Signature",p:8.00,pop:1,d:"Composez votre kebab signature avec les ingrédients de votre choix.",img:"https://img.freepik.com/premium-photo/doner-kebab-doner-kebap-fast-food-flatbread-wooden-board_770123-1281.jpg?w=2000",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:3.00}]},
   {n:"Kebab Mega",p:12.00,pop:1,d:"Double portion de viande pour les grandes faims.",img:"https://img.freepik.com/premium-photo/doner-kebab-doner-kebap-fast-food-flatbread-wooden-board_770123-1281.jpg?w=2000",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:3.00}]}]},
  {cat:"Tacos",icon:"🌮",type:"sale",items:[
-  {n:"Tacos M",p:8.50,pop:1,d:"1 viande au choix, frites, fromage et sauce fromagère.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",opts:[{l:"Seul",extra:0},{l:"Avec boisson 33cl",extra:1.40}]},
-  {n:"Tacos L",p:9.50,d:"2 viandes au choix, frites et sauce fromagère gratinée.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",opts:[{l:"Seul",extra:0},{l:"Avec boisson 33cl",extra:1.40}]},
-  {n:"Tacos XL",p:11.00,d:"3 viandes pour les gros appétits, frites et sauce maison.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",opts:[{l:"Seul",extra:0},{l:"Avec boisson 33cl",extra:1.40}]}]},
+  {n:"Tacos M",p:8.50,pop:1,d:"1 viande au choix, frites, fromage et sauce fromagère.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",sauces:true,drinkAdd:1},
+  {n:"Tacos L",p:9.50,d:"2 viandes au choix, frites et sauce fromagère gratinée.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",sauces:true,drinkAdd:1},
+  {n:"Tacos XL",p:11.00,d:"3 viandes pour les gros appétits, frites et sauce maison.",img:WK+"French%20Tacos%20from%20O%27Tacos.jpg",sauces:true,drinkAdd:1}]},
  {cat:"Burgers",icon:"🍔",type:"sale",items:[
-  {n:"Burger Fish",p:8.00,d:"Filet de poisson pané, cheddar, salade et sauce tartare.",img:"1551782450-a2132b4ba21d",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.90}]},
-  {n:"Burger Chicken",p:8.00,d:"Galette de poulet croustillante, cheddar et sauce burger.",img:"1606755962773-d324e0a13086",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.90}]},
-  {n:"Burger Steak",p:8.00,d:"Steak haché, cheddar fondu, oignons et sauce maison.",img:"1550547660-d9450f859349",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.90}]},
-  {n:"Mega Beef",p:9.90,pop:1,d:"Double steak, double cheddar, cornichons et sauce signature.",img:"1568901346375-23c9450c58cd",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.60}]},
-  {n:"Mega Beef montagnard",p:10.00,d:"Double steak, reblochon fondu et oignons grillés.",img:"1561758033-d89a9ad46330",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]},
-  {n:"Giant Beef chèvre & miel",p:10.00,d:"Steak généreux, chèvre crémeux et filet de miel.",img:"1571091718767-18b5b1457add",opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]}]},
+  {n:"Burger Fish",p:8.00,d:"Filet de poisson pané, cheddar, salade et sauce tartare.",img:"1551782450-a2132b4ba21d",sauces:true,drinkAdd:1,opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.90}]},
+  {n:"Burger Chicken",p:8.00,d:"Galette de poulet croustillante, cheddar et sauce burger.",img:"1606755962773-d324e0a13086",sauces:true,drinkAdd:1,opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.90}]},
+  {n:"Burger Steak",p:8.00,d:"Steak haché, cheddar fondu, oignons et sauce maison.",img:"1550547660-d9450f859349",sauces:true,drinkAdd:1,opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.90}]},
+  {n:"Mega Beef",p:9.90,pop:1,d:"Double steak, double cheddar, cornichons et sauce signature.",img:"1568901346375-23c9450c58cd",sauces:true,drinkAdd:1,opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:1.60}]},
+  {n:"Mega Beef montagnard",p:10.00,d:"Double steak, reblochon fondu et oignons grillés.",img:"1561758033-d89a9ad46330",sauces:true,drinkAdd:1,opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]},
+  {n:"Giant Beef chèvre & miel",p:10.00,d:"Steak généreux, chèvre crémeux et filet de miel.",img:"1571091718767-18b5b1457add",sauces:true,drinkAdd:1,opts:[{l:"Seul",extra:0},{l:"Avec menu frites + boisson",extra:2.90}]}]},
  {cat:"Pizza",icon:"🍕",type:"sale",items:[
   {n:"Reine",p:11.00,d:"Sauce tomate, mozzarella, jambon de dinde et champignons.",img:WK+"Pizza%20prosciutto%20e%20funghi%2C%20Edingen.jpg"},
   {n:"Orientale",p:11.00,d:"Mozzarella, viande de bœuf épicée, oignons et poivrons.",img:WK+"Pizza%20capricciosa.jpg"},
@@ -702,6 +702,7 @@ const MENU=[
   {n:"Chocolat viennois",p:3.50,d:"Chocolat chaud et chantilly.",img:"1544787219-7f47ccb76574"},
   {n:"Chocolat italien",p:3.50,d:"Chocolat épais à l'italienne.",img:"1517256064527-09c73fc73e38"}]}
 ];
+const SAUCES=['Blanche','Harissa','Algérienne','Ketchup','Mayonnaise','Samouraï','Barbecue','Andalouse'];
 let SUGGEST_DESSERT={n:"Milk-shake Oréo",p:5.50,type:"dessert",img:"1541658016709-82535e94bc69"};
 let SUGGEST_DRINK={n:"Coca-Cola 33cl",p:2.00,type:"boisson",img:"1554866585-cd94860890b7"};
 const imgUrl=(id,w,h)=>{
@@ -766,10 +767,12 @@ function renderMenu(){
       const img=ov.img||it.img;
       const data=JSON.stringify({n:it.n,p:price,type:g.type,img});
       const hasOpts=it.opts&&it.opts.length>0;
-      const dispPrice=hasOpts?`À partir de ${eur(price)}`:eur(price);
+      const hasConfig=hasOpts||it.sauces||it.drinkAdd;
+      const hasPriceVar=hasOpts&&it.opts.some(o=>o.extra>0);
+      const dispPrice=hasPriceVar?`À partir de ${eur(price)}`:eur(price);
       const cfgKey='cfg_'+slug(it.n);
-      if(hasOpts)window[cfgKey]={...it,type:g.type,p:price,img};
-      const btnClick=hasOpts?`openCfg("${cfgKey}")`:(`addItem(${data})`);
+      if(hasConfig)window[cfgKey]={...it,type:g.type,p:price,img};
+      const btnClick=hasConfig?`openCfg("${cfgKey}")`:(`addItem(${data})`);
       h+=`<div class="item${unavail?' unavail':''}">${pop}${unBadge}
         <div class="photo"><img loading="lazy" alt="${it.n} — Croc Meal Reims" src="${imgUrl(img,500,350)}" onerror="imgErr(this)"></div>
         <div class="body"><h4>${it.n}</h4>
@@ -839,8 +842,9 @@ function closeUpsell(){$('upsellModal').classList.remove('show');updateCart();op
 // ==================== CONFIG FLOW ====================
 let cfgState=null;
 function openCfg(key){
-  cfgState={item:window[key],opt:null,drink:null,side:null,dessert:null};
-  cfgShowOpts();
+  cfgState={item:window[key],opt:null,sauce:null,drink:null,drinkAdd:null,side:null,dessert:null};
+  const it=cfgState.item;
+  if(it.sauces&&(!it.opts||it.opts.length===0)){cfgShowSauce();}else{cfgShowOpts();}
   $('cfgModal').classList.add('show');$('overlay').classList.add('show');
 }
 function closeCfg(){$('cfgModal').classList.remove('show');if(!document.querySelector('.modal.show:not(#cfgModal)'))$('overlay').classList.remove('show');}
@@ -862,8 +866,25 @@ function cfgShowOpts(){
 }
 function cfgPickOpt(i){
   cfgState.opt=cfgState.item.opts[i];
-  const isMenu=cfgState.opt.extra>0;
-  if(isMenu){cfgShowDrink();}else{cfgFinish();}
+  if(cfgState.item.sauces){cfgShowSauce();}
+  else{const isMenu=cfgState.opt.extra>0;if(isMenu){cfgShowDrink();}else{cfgFinish();}}
+}
+function cfgShowSauce(){
+  const it=cfgState.item;
+  let h=`<img src="${imgUrl(it.img,480,120)}" onerror="imgErr(this)">
+  <div class="cfg-title">Votre sauce 🌶️</div>
+  <div class="cfg-sub">Choisissez une sauce classique</div>
+  <div class="cfg-opts">`;
+  SAUCES.forEach((s,i)=>h+=`<button class="cfg-opt-btn" onclick="cfgPickSauce(${i})"><span>${s}</span></button>`);
+  h+=`</div>`;
+  $('cfgCard').innerHTML=h;
+}
+function cfgPickSauce(i){
+  cfgState.sauce=SAUCES[i];
+  const isMenu=cfgState.opt&&cfgState.opt.extra>0;
+  if(isMenu){cfgShowDrink();}
+  else if(cfgState.item.drinkAdd){cfgShowDrinkAdd();}
+  else{cfgFinish();}
 }
 function cfgShowDrink(){
   const drinks=MENU.find(g=>g.cat==='Boissons fraîches').items.filter(d=>d.p<=2.00);
@@ -882,7 +903,21 @@ function cfgShowDrink(){
 }
 function cfgPickDrink(i){
   cfgState.drink=$('cfgCard')._drinks[i];
-  cfgShowSide();
+  if(cfgState.item.sauces){cfgFinish();}else{cfgShowSide();}
+}
+function cfgShowDrinkAdd(){
+  const drinks=MENU.find(g=>g.cat==='Boissons fraîches').items.filter(d=>d.p<=2.50);
+  const addP=cfgState.item.drinkAdd||1;
+  let h=`<div class="cfg-title">Ajouter une boisson ? 🥤</div>
+  <div class="cfg-sub">+${eur(addP)} — bouteille 33cl</div>
+  <div class="cfg-grid">`;
+  drinks.forEach((d,i)=>h+=`<button class="cfg-item-btn" onclick="cfgPickDrinkAdd(${i})"><img src="${imgUrl(d.img,52,52)}" onerror="imgErr(this)"><span class="cfg-n">${d.n}</span></button>`);
+  h+=`</div><button class="btn btn-ghost btn-block" onclick="cfgFinish()">Non merci, finaliser →</button>`;
+  $('cfgCard').innerHTML=h;
+  $('cfgCard')._drinks=drinks;
+}
+function cfgPickDrinkAdd(i){
+  const d=$('cfgCard')._drinks[i];cfgState.drinkAdd={...d,p:cfgState.item.drinkAdd||1};cfgFinish();
 }
 function cfgShowSide(){
   const sides=MENU.find(g=>g.cat==='Box & Poulet').items;
@@ -924,9 +959,11 @@ function cfgFinish(){
   closeCfg();
   const it=cfgState.item,opt=cfgState.opt;
   const totalP=it.p+(opt?opt.extra:0);
-  const name=opt&&opt.extra>0?`${it.n} Menu`:it.n;
+  let name=opt&&opt.extra>0?`${it.n} Menu`:it.n;
+  if(cfgState.sauce)name+=` — sauce ${cfgState.sauce}`;
   cart.push({n:name,p:totalP,type:it.type,img:it.img,qty:1,discount:0});
   if(cfgState.drink){cart.push({n:`${cfgState.drink.n} (inclus)`,p:0,type:'boisson',img:cfgState.drink.img,qty:1,discount:0});}
+  if(cfgState.drinkAdd){cart.push({n:cfgState.drinkAdd.n,p:cfgState.drinkAdd.p,type:'boisson',img:cfgState.drinkAdd.img,qty:1,discount:0});}
   if(cfgState.side){cart.push({...cfgState.side,qty:1,discount:0});}
   if(cfgState.dessert){cart.push({...cfgState.dessert,qty:1,discount:0});}
   updateCart();openCart();
