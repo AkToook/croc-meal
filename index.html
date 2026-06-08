@@ -360,10 +360,15 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
       <div class="pdj-grid">
         <div class="pdj-img"><img id="pdjImg" src="" alt="Plat du jour Croc Meal" onerror="imgErr(this)"></div>
         <div>
-          <span class="pdj-badge">⭐ Plat du jour</span>
+          <span class="pdj-badge" id="pdjBadge">⭐ Plat du jour</span>
           <h2 class="pdj-title" id="pdjTitle">Plat du jour</h2>
           <p class="pdj-desc" id="pdjDesc"></p>
           <p class="pdj-compo" id="pdjCompo"></p>
+          <div id="pdjComboSlot" style="display:none;align-items:center;gap:10px;margin:8px 0">
+            <span style="font-size:22px;font-weight:900;opacity:.6">+</span>
+            <img id="pdjImg2" src="" alt="" style="width:52px;height:52px;border-radius:10px;object-fit:cover" onerror="imgErr(this)">
+            <span id="pdjItem2Name" style="font-weight:800;font-size:15px"></span>
+          </div>
           <div class="pdj-price" id="pdjPrice">13,00 €</div>
           <button class="btn btn-primary" onclick="addPDJ()">🍴 Commander ce plat</button>
         </div>
@@ -543,6 +548,37 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
   </div>
 </div>
 
+<!-- Auth modal -->
+<div class="modal" id="authModal" role="dialog" aria-modal="true" aria-label="Connexion">
+  <div class="modal-card" style="max-width:380px">
+    <div id="authViewChoice">
+      <h3 style="margin-bottom:6px">Avant de commander</h3>
+      <p class="sub">Créez un compte pour retrouver vos commandes, ou continuez directement.</p>
+      <button class="btn btn-primary btn-block" onclick="showAuthView('register')" style="margin-bottom:10px;width:100%">👤 Créer un compte</button>
+      <button class="btn btn-block" onclick="showAuthView('login')" style="margin-bottom:10px;width:100%">🔑 J'ai déjà un compte</button>
+      <button class="btn btn-ghost btn-block" onclick="continueAsGuest()" style="width:100%">Continuer sans compte →</button>
+    </div>
+    <div id="authViewRegister" style="display:none">
+      <h3 style="margin-bottom:6px">Créer un compte</h3>
+      <p class="sub">Rapide et gratuit.</p>
+      <input class="a-in" id="regPrenom" type="text" placeholder="Prénom" style="width:100%;margin-bottom:10px">
+      <input class="a-in" id="regEmail" type="email" placeholder="Email" style="width:100%;margin-bottom:10px">
+      <input class="a-in" id="regPass" type="password" placeholder="Mot de passe (6 car. min.)" style="width:100%;margin-bottom:14px">
+      <button class="btn btn-primary btn-block" onclick="doRegister()" style="margin-bottom:10px;width:100%">Créer mon compte</button>
+      <button class="btn btn-ghost btn-block" onclick="showAuthView('choice')" style="width:100%">← Retour</button>
+    </div>
+    <div id="authViewLogin" style="display:none">
+      <h3 style="margin-bottom:6px">Me connecter</h3>
+      <p class="sub">Content de te revoir !</p>
+      <input class="a-in" id="loginEmail" type="email" placeholder="Email" style="width:100%;margin-bottom:10px">
+      <input class="a-in" id="loginPass" type="password" placeholder="Mot de passe" style="width:100%;margin-bottom:14px">
+      <button class="btn btn-primary btn-block" onclick="doLogin()" style="margin-bottom:10px;width:100%">Se connecter</button>
+      <button class="btn btn-ghost btn-block" onclick="showAuthView('choice')" style="width:100%">← Retour</button>
+    </div>
+    <p id="authError" style="color:var(--accent);font-size:13px;text-align:center;margin-top:10px;display:none"></p>
+  </div>
+</div>
+
 <!-- Config flow modal -->
 <div class="modal" id="cfgModal" role="dialog" aria-modal="true">
   <div class="modal-card" id="cfgCard"></div>
@@ -579,6 +615,8 @@ footer{padding:34px 0;border-top:1px solid var(--line)}
   <div class="adm-body" id="admBody"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
 <script>
 const WK="https://commons.wikimedia.org/wiki/Special:FilePath/";
@@ -968,8 +1006,13 @@ function claimPromo(){firstOrder=true;sessionStorage.setItem('promo_seen','1');c
 function checkout(){
   if(cart.length===0)return;
   if(orderMode==='livraison'&&subtotal()<MIN_LIVRAISON)return;
+  if(fbAuth.currentUser){doCheckout();}else{openAuthModal();}
+}
+function doCheckout(){
   const modeLabel={place:'Sur place',emporter:'À emporter',livraison:'Livraison'}[orderMode];
   let msg=`🛒 *Nouvelle commande — Croc Meal*\n📦 *${modeLabel}*\n\n`;
+  const u=fbAuth.currentUser;
+  if(u)msg+=`👤 *${u.displayName||u.email}*\n\n`;
   cart.forEach(l=>{msg+=`• ${l.n} ×${l.qty} — ${eur(lineTotal(l))}\n`;});
   const tot=subtotal();
   const promo=firstOrder?tot*0.05:0;
@@ -984,7 +1027,7 @@ function resetAll(){cart=[];refusedDessert=false;refusedDrink=false;$('confirmMo
 // ==================== ADMIN SYSTEM ====================
 const ADM_PASS='crocmeal2026',ADM_KEY='croc_adm_v1';
 let admStars=5;
-function defAdm(){return{pdj:{on:false,title:'Plat du jour',desc:'',compo:'',price:13,img:''},promoOn:true,promoPct:5,upsellOn:true,upsellPct:10,usDessert:{n:'Milk-shake Oréo',p:5.50,type:'dessert',img:'1541658016709-82535e94bc69'},usDrink:{n:'Coca-Cola 33cl',p:2.00,type:'boisson',img:'1554866585-cd94860890b7'},topbar:'📍 28 Boulevard Joffre, Reims · 🕘 Ouvert 7J/7 dès le matin · ✅ 100 % Halal',phone:'09 55 27 49 84',email:'crocmeal@yahoo.com',hours:'9h00 - 23h00',dlvZones:[{lbl:'Zone proche',min:15},{lbl:'Zone étendue',min:20}],heroImg:'',mintImg:'',galImgs:['','','','','',''],overrides:{},extras:[],revOn:false,reviews:[]};}
+function defAdm(){return{pdj:{on:false,mode:'single',item1:'',item2:'',title:'',desc:'',compo:'',price:13,img:''},promoOn:true,promoPct:5,upsellOn:true,upsellPct:10,usDessert:{n:'Milk-shake Oréo',p:5.50,type:'dessert',img:'1541658016709-82535e94bc69'},usDrink:{n:'Coca-Cola 33cl',p:2.00,type:'boisson',img:'1554866585-cd94860890b7'},topbar:'📍 28 Boulevard Joffre, Reims · 🕘 Ouvert 7J/7 dès le matin · ✅ 100 % Halal',phone:'09 55 27 49 84',email:'crocmeal@yahoo.com',hours:'9h00 - 23h00',dlvZones:[{lbl:'Zone proche',min:15},{lbl:'Zone étendue',min:20}],heroImg:'',mintImg:'',galImgs:['','','','','',''],overrides:{},extras:[],revOn:false,reviews:[]};}
 let AS=(()=>{try{const s=localStorage.getItem(ADM_KEY);if(!s)return defAdm();return{...defAdm(),...JSON.parse(s)};}catch(e){return defAdm();}})();
 function saveAS(){localStorage.setItem(ADM_KEY,JSON.stringify(AS));}
 
@@ -999,18 +1042,32 @@ function applyAS(){
 }
 
 // --- Plat du jour ---
+function getAllMenuItems(){const all=[];MENU.forEach(g=>g.items.forEach(i=>all.push({...i,cat:g.cat,type:g.type})));(AS.extras||[]).forEach(i=>all.push(i));return all;}
 function applyPDJ(){
   const band=$('pdjBand'),p=AS.pdj;
   if(!p.on){band.classList.remove('show');return;}
   band.classList.add('show');
-  $('pdjTitle').textContent=p.title;
-  $('pdjDesc').textContent=p.desc;
-  $('pdjCompo').textContent=p.compo;
-  $('pdjPrice').textContent=eur(p.price);
-  const img=$('pdjImg');
-  if(p.img){img.src=p.img;img.style.visibility='visible';}else img.style.visibility='hidden';
+  const all=getAllMenuItems();
+  const it1=p.item1?all.find(i=>i.n===p.item1):null;
+  const it2=p.mode==='combo'&&p.item2?all.find(i=>i.n===p.item2):null;
+  const badge=$('pdjBadge');if(badge)badge.textContent=p.mode==='combo'?'🔥 Offre du jour':'⭐ Plat du jour';
+  const src1=p.img||(it1?imgUrl(it1.img,400,300):'');
+  const img=$('pdjImg');if(src1){img.src=src1;img.style.visibility='visible';}else img.style.visibility='hidden';
+  $('pdjTitle').textContent=p.title||(it1?it1.n:'Plat du jour');
+  $('pdjDesc').textContent=p.desc||(it1?it1.d||'':'');
+  $('pdjCompo').textContent=p.compo||(p.mode==='combo'?'Plat salé + dessert / boisson':'');
+  const cs=$('pdjComboSlot');
+  if(cs){if(it2){cs.style.display='flex';$('pdjImg2').src=imgUrl(it2.img,52,52);$('pdjItem2Name').textContent=it2.n;}else cs.style.display='none';}
+  $('pdjPrice').textContent=eur(p.price||13);
 }
-function addPDJ(){const p=AS.pdj;addItem({n:p.title,p:p.price,type:'sale',img:p.img||'1568901346375-23c9450c58cd'});}
+function addPDJ(){
+  const p=AS.pdj;const all=getAllMenuItems();
+  const it1=p.item1?all.find(i=>i.n===p.item1):null;
+  const it2=p.mode==='combo'&&p.item2?all.find(i=>i.n===p.item2):null;
+  const title=(p.title||(it1?it1.n:'Plat du jour'))+(it2?' + '+it2.n:'');
+  const img=p.img||(it1?it1.img:'1568901346375-23c9450c58cd');
+  addItem({n:title,p:p.price||13,type:'sale',img});
+}
 
 // --- Reviews ---
 function applyRevSection(){
@@ -1045,18 +1102,35 @@ function toast(msg){let t=document.getElementById('aToast');if(!t){t=document.cr
 function reRenderMenu(){$('menuRoot').innerHTML='';$('catbar').innerHTML='';$('envieGrid').innerHTML='';renderMenu();renderEnvie();emojify($('menuRoot'));emojify($('envieGrid'));}
 
 // --- Tab: Plat du jour ---
-function tPDJ(){const p=AS.pdj;return`<div class="a-sec"><h4>Plat du jour</h4>
+function tPDJ(){
+  const p=AS.pdj;const all=getAllMenuItems();const isCombo=p.mode==='combo';
+  const opts=all.map(i=>`<option value="${i.n.replace(/"/g,'&quot;')}"${p.item1===i.n?' selected':''}>${i.n} — ${eur(i.p)}</option>`).join('');
+  const opts2=all.map(i=>`<option value="${i.n.replace(/"/g,'&quot;')}"${p.item2===i.n?' selected':''}>${i.n} — ${eur(i.p)}</option>`).join('');
+  return`<div class="a-sec"><h4>Plat du jour</h4>
 <div class="a-row" style="margin-bottom:14px"><span class="ar-n">Afficher sur le site</span><input type="checkbox" class="a-tog" id="pi_on" ${p.on?'checked':''} onchange="AS.pdj.on=this.checked;applyPDJ()"></div>
-<label class="a-label">Titre</label><input class="a-in" id="pi0" value="${p.title}">
-<label class="a-label">Description</label><input class="a-in" id="pi1" value="${p.desc}" placeholder="Ingrédients, accompagnements...">
-<label class="a-label">Composition (sous-titre)</label><input class="a-in" id="pi2" value="${p.compo}" placeholder="Ex : Plat salé + dessert">
-<label class="a-label">Prix (€)</label><input class="a-in sm" type="number" step="0.5" id="pi3" value="${p.price}">
-<label class="a-label">URL photo</label><input class="a-in" id="pi4" value="${p.img}" placeholder="https://...">
+<label class="a-label">Mode</label>
+<div style="display:flex;gap:8px;margin-bottom:14px">
+<button class="a-btn ${!isCombo?'ap':'ag'}" style="flex:1" onclick="setPDJMode('single')">🍽️ Plat seul</button>
+<button class="a-btn ${isCombo?'ap':'ag'}" style="flex:1" onclick="setPDJMode('combo')">🍽️+🍰 Combo</button></div>
+<label class="a-label">Plat principal</label>
+<select class="a-in" id="pi_item1"><option value="">— Choisir un plat —</option>${opts}</select>
+${isCombo?`<label class="a-label">2ème plat (dessert, boisson…)</label><select class="a-in" id="pi_item2"><option value="">— Choisir —</option>${opts2}</select>`:''}
+<label class="a-label">Titre affiché <span style="font-weight:400;color:var(--muted)">(vide = nom du plat)</span></label>
+<input class="a-in" id="pi0" value="${p.title||''}" placeholder="Ex : Le Mega Kebab du jour">
+<label class="a-label">Description</label><input class="a-in" id="pi1" value="${p.desc||''}" placeholder="Ingrédients, accompagnements...">
+<label class="a-label">Sous-titre <span style="font-weight:400;color:var(--muted)">(vide = auto)</span></label>
+<input class="a-in" id="pi2" value="${p.compo||''}" placeholder="${isCombo?'Plat salé + dessert / boisson':'Ex : Plat du jour à emporter'}">
+<label class="a-label">Prix (€)</label><input class="a-in sm" type="number" step="0.5" id="pi3" value="${p.price||13}">
+<label class="a-label">Photo <span style="font-weight:400;color:var(--muted)">(vide = photo du plat sélectionné)</span></label>
+<input class="a-in" id="pi4" value="${p.img||''}" placeholder="https://...">
 ${p.img?`<img class="a-prev" src="${p.img}" onerror="this.style.display='none'">`:''}
 <button class="a-btn ap blk" onclick="savePDJ()">💾 Enregistrer le plat du jour</button></div>`;}
+function setPDJMode(mode){AS.pdj.mode=mode;showAdmTab('platdujour');}
 function savePDJ(){
   const tog=document.getElementById('pi_on');
-  AS.pdj={on:tog?tog.checked:AS.pdj.on,title:$el('pi0')||'Plat du jour',desc:$el('pi1'),compo:$el('pi2'),price:parseFloat($el('pi3'))||13,img:$el('pi4')};
+  const it1El=document.getElementById('pi_item1');
+  const it2El=document.getElementById('pi_item2');
+  AS.pdj={on:tog?tog.checked:AS.pdj.on,mode:AS.pdj.mode||'single',item1:it1El?it1El.value:'',item2:it2El?it2El.value:'',title:$el('pi0'),desc:$el('pi1'),compo:$el('pi2'),price:parseFloat($el('pi3'))||13,img:$el('pi4')};
   saveAS();applyPDJ();toast('✅ Plat du jour enregistré');showAdmTab('platdujour');
 }
 
@@ -1152,7 +1226,16 @@ function saveInfos(){
 }
 
 // --- Tab: Visuels ---
-function tVisuels(){const g=AS.galImgs||[];return`<div class="a-sec"><h4>Image hero (fond d'accueil)</h4>
+function tVisuels(){
+  const g=AS.galImgs||[];const ov=AS.overrides||{};const all=getAllMenuItems();
+  const itemRows=all.map(it=>{const ovImg=(ov[it.n]||{}).img||'';
+    return`<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line)">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+<img src="${imgUrl(ovImg||it.img,40,40)}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" onerror="imgErr(this)">
+<span class="ar-n">${it.n}</span></div>
+<input class="a-in" placeholder="URL photo (vide = défaut)" value="${ovImg}" onchange="setOv('${it.n.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}','img',this.value.trim())" style="margin:0"></div>`;
+  }).join('');
+  return`<div class="a-sec"><h4>Image hero (fond d'accueil)</h4>
 ${AS.heroImg?`<img class="a-prev" src="${AS.heroImg}" onerror="this.style.display='none'">`:''}
 <input class="a-in" id="vi0" value="${AS.heroImg||''}" placeholder="https://images.unsplash.com/..."></div>
 <div class="a-sec"><h4>Image "Faits à la minute"</h4>
@@ -1161,7 +1244,10 @@ ${AS.mintImg?`<img class="a-prev" src="${AS.mintImg}" onerror="this.style.displa
 <div class="a-sec"><h4>Galerie (6 photos)</h4>
 ${[0,1,2,3,4,5].map(i=>`<label class="a-label">Photo ${i+1}</label>${g[i]?`<img class="a-prev" src="${g[i]}" onerror="this.style.display='none'">`:''}
 <input class="a-in" id="vg${i}" value="${g[i]||''}" placeholder="https://...">`).join('')}</div>
-<button class="a-btn ap blk" onclick="saveVisuels()">💾 Enregistrer les visuels</button>`;}
+<button class="a-btn ap blk" onclick="saveVisuels()">💾 Enregistrer les visuels</button>
+<div class="a-sec" style="margin-top:16px"><h4>Photos des produits</h4>
+<p style="font-size:11px;color:var(--muted);margin-bottom:12px">Remplace la photo d'un produit par n'importe quelle URL (laisse vide = photo par défaut).</p>
+${itemRows}</div>`;}
 function saveVisuels(){
   AS.heroImg=$el('vi0');AS.mintImg=$el('vi1');
   AS.galImgs=[0,1,2,3,4,5].map(i=>{const e=document.getElementById(`vg${i}`);return e?e.value.trim():'';});
@@ -1192,6 +1278,68 @@ function addRev(){
 }
 function rmRev(i){AS.reviews.splice(i,1);saveAS();applyRevSection();showAdmTab('avis');}
 // ==================== FIN ADMIN ====================
+
+// ==================== FIREBASE AUTH ====================
+firebase.initializeApp({
+  apiKey:"AIzaSyCaxE-POSptcvcXAGSYq7PFKPMcMnRFouM",
+  authDomain:"arena-pizza-kebab-3f078.firebaseapp.com",
+  projectId:"arena-pizza-kebab-3f078",
+  storageBucket:"arena-pizza-kebab-8e281.firebasestorage.app",
+  messagingSenderId:"882481455580",
+  appId:"1:882481455580:web:2f17aa7e76bae740de2f19"
+},'croc-meal');
+const fbAuth=firebase.app('croc-meal').auth();
+
+function openAuthModal(){
+  showAuthView('choice');
+  $('authModal').classList.add('show');
+  $('overlay').classList.add('show');
+}
+function closeAuthModal(){
+  $('authModal').classList.remove('show');
+  $('overlay').classList.remove('show');
+}
+function showAuthView(v){
+  ['choice','register','login'].forEach(id=>{
+    const el=$('authView'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(el)el.style.display='none';
+  });
+  const target=$('authView'+v.charAt(0).toUpperCase()+v.slice(1));
+  if(target)target.style.display='block';
+  const err=$('authError');if(err){err.style.display='none';err.textContent='';}
+}
+function showAuthError(msg){
+  const err=$('authError');err.textContent=msg;err.style.display='block';
+}
+async function doRegister(){
+  const prenom=document.getElementById('regPrenom').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPass').value;
+  if(!prenom)return showAuthError('Remplis ton prénom.');
+  if(!email)return showAuthError('Remplis ton email.');
+  if(pass.length<6)return showAuthError('Mot de passe trop court (6 car. min.).');
+  try{
+    const cred=await fbAuth.createUserWithEmailAndPassword(email,pass);
+    await cred.user.updateProfile({displayName:prenom});
+    closeAuthModal();doCheckout();
+  }catch(e){
+    const msgs={'auth/email-already-in-use':'Cet email est déjà utilisé.','auth/invalid-email':'Email invalide.','auth/weak-password':'Mot de passe trop faible.'};
+    showAuthError(msgs[e.code]||e.message);
+  }
+}
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass)return showAuthError('Remplis tous les champs.');
+  try{
+    await fbAuth.signInWithEmailAndPassword(email,pass);
+    closeAuthModal();doCheckout();
+  }catch(e){
+    const msgs={'auth/user-not-found':'Aucun compte avec cet email.','auth/wrong-password':'Mot de passe incorrect.','auth/invalid-email':'Email invalide.','auth/invalid-credential':'Email ou mot de passe incorrect.'};
+    showAuthError(msgs[e.code]||e.message);
+  }
+}
+function continueAsGuest(){closeAuthModal();doCheckout();}
 
 renderEnvie();renderMenu();updateCart();emojify(document.body);
 document.querySelectorAll('.faq-list summary').forEach(s=>{
